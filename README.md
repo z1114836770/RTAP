@@ -18,7 +18,7 @@
 已实现解析：
 
     Ehternet II \ IP \ TCP \ 数据         
-		Ehternet II \ ARP
+    Ehternet II \ ARP
 
 示例：可见示例.png
 
@@ -29,5 +29,6 @@ eth_2_ip_tcp { eth_head: eth_2_head { dst_mac: "00:0c:29:06:8e:04", src_mac: "00
 
 
 <span class="bg s_ipt_wr"></" }
-持续更新......
+	
+
 

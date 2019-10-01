@@ -10,7 +10,7 @@
 
 配置文件：config
 
-工具运行：sudo ./pcap_rust
+工具运行：sudo ./RTAP （文件在target目录内）
 
 持续开发中 . . . . . .
 

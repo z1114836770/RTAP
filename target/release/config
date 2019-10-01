@@ -1,0 +1,118 @@
+{
+    #jian ting wang ka
+    "net":"wlp2s0b1",
+
+    #bu jian cha yuan ip
+    "not_check_source_ip":[],
+
+    #bu jian cha yuan dizhi
+    "not_check_source_port":[],
+
+    #bu jian cha mu biao ip
+    "not_check_dst_ip":[],
+
+    #bu jian cha mu biao port
+    "not_check_dst_port":[],
+
+
+
+
+    "hks_key":[
+        {
+            "name":"awvs",
+            "keys":[
+                "acunetix-wvs-test-for-some-inexistent-file",
+                "by_wvs",
+                "acunetix_wvs_security_test",
+                "acunetix",
+                "acunetix_test",
+                "acunetixCookie",
+                "acunetix/wvs",
+                "acunetix-aspect-password",
+                "acunetix-aspect-queries",
+                "acunetix-aspect"
+            ]
+        },
+        {
+            "name":"netsparker",
+            "keys":[
+                "netsparker",
+                "Netsparker",
+                "ns: netsparker",
+                "netsparker/check",
+                "NETSPARKER"
+            ]
+        },
+         {
+             "name":"appscan",
+             "keys":[
+                "appscan",
+                "Appscan",
+                "appscanheader",
+                "AppScanHeader"
+             ]
+         },
+         {
+             "name":"wewebinspect",
+             "keys":[
+                "HP404",
+                "hp asc",
+                "HP ASC",
+                "webinspect",
+                "customCookie",
+                "CustomCookie",
+                "X-WIPP",
+                "X-Request-Memo",
+                "X-Scan-Memo",
+                "X-RequestManager-Memo"
+             ]
+         },
+         {
+             "name":"rsas",
+             "keys":[
+                "nsfocus",
+                "rsas",
+                "Rsas"
+             ]
+         },
+         {
+             "name":"nessus",
+             "keys":[
+                "nessus",
+                "Nessus"
+             ]
+         },
+         {
+             "name":"webReaver",
+             "keys":[
+                 "webreaver",
+                 "WebReaver"
+             ]
+         },
+         {
+             "name":"sqlmap",
+             "keys":[
+                  "sqlmap"
+             ]
+         }
+
+    ]
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

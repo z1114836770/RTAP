@@ -8,17 +8,25 @@
 
 运行环境：libpcap
 
-配置文件：config
+配置文件：config （需要和RTAP运行程序在同级目录）
 
-工具运行：sudo ./pcap_rust
+工具运行：sudo ./RTAP （文件在target目录内）
+
+坑：
+	1、异常：
+		failed to run custom build command for `openssl-sys v0.9.49`
+	1、解决：
+		sudo apt install libssl-dev
+	
 
 持续开发中 . . . . . .
 
 
-已实现解析：
+当前进度：
+	已实现解析：
 
-    Ehternet II \ IP \ TCP \ 数据         
-    Ehternet II \ ARP
+    		Ehternet II \ IP \ TCP \ 数据         
+    		Ehternet II \ ARP
 
 示例：可见示例.png
 

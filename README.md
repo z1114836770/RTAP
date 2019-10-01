@@ -12,6 +12,13 @@
 
 工具运行：sudo ./RTAP （文件在target目录内）
 
+坑：
+	1、异常：
+		failed to run custom build command for `openssl-sys v0.9.49`
+	1、解决：
+		sudo apt install libssl-dev
+	
+
 持续开发中 . . . . . .
 
 

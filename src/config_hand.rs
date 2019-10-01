@@ -28,53 +28,46 @@ pub struct config{
 }
 
 
-
+//获取配置文件config中的内容
 pub fn config_info() -> (config,HashMap<String,String>){
 
+//    将config中的内容读取到config_info中
     let mut config_info = String::new();
 
-    
     match std::fs::File::open("config") {
         Ok(file) => {
             for line in BufReader::new(file).lines() {
                 match line {
                     Ok(l) => {
                         let line = l;
+//                        开头为#的内容为朱姐注释
                         if !line.contains("#") && line.replace(" ","").len() != 0 {
                             config_info.push_str(line.replace(" ","").as_str());
                         }
                     }
                     Err(e) =>{
-                        println!("read config line er");
+                        println!("读取config内容出错，请联系开发人员");
                         exit(0);
                     }
                 }
-
             }
         }
         Err(e) => {
-            println!("not read config file");
+            println!("没有读取到config配置文件，请将config和运行程序至于同级目录");
             exit(0);
         }
     }
 
-//    for line in BufReader::new(std::fs::File::open("config").expect("not read config file")).lines() {
-//        let line = line.expect("read config line err");
-//        if !line.contains("#") && line.replace(" ","").len() != 0 {
-//            config_info.push_str(line.replace(" ","").as_str());
-//        }
-//    }
 
-
+//    将配置内容转换成json
     let mut con:config ;
-
     let a = serde_json::de::from_str::<config>(config_info.as_str());
     match a {
         Ok(j) => {
             con = j;
         }
         Err(e) => {
-            println!("format json err");
+            println!("将config转成json失败");
             exit(0);
             con = config{
                 net: "".to_string(),
@@ -84,13 +77,10 @@ pub fn config_info() -> (config,HashMap<String,String>){
                 not_check_dst_port: vec![],
                 hks_key: vec![]
             };
-
         }
     }
 
-//    let con: config = serde_json::de::from_str(config_info.as_str()).expect("json err");
-
-
+//ip\tcp 数据中的关键字
     let mut hk:HashMap<String,String> = HashMap::new();
     for hks_key in &con.hks_key{
         for key in &hks_key.keys{

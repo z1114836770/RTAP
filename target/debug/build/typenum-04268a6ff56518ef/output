@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_OP=/home/zbf/workspace/git/RTAP/target/debug/build/typenum-04268a6ff56518ef/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/zbf/workspace/git/RTAP/target/debug/build/typenum-04268a6ff56518ef/out/op.rs

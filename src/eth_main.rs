@@ -54,9 +54,6 @@ fn analyze_ethernet(packet:&Packet,conf:&config,hk_map:&HashMap<String,String>) 
                 }
             }
 
-//            let info = format!("{:?}",eth_2_info);
-//            println!("{:?}",info);
-//            hadn_hk(&info,hk_map);
         }
         eth_format::NOVELL_ETHERNET => {
             println!("NOVELL_ETHERNET is not develop")

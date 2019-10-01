@@ -14,7 +14,7 @@ pub fn hand_eth_2(data:&[u8]) -> eth_2_struct{
             match protocol {
 //                IGMP
                 2 => {
-                    eth_2_struct::UNKOWN("协议未开发".to_string())
+                    eth_2_struct::UNKOWN("IGMP协议未开发".to_string())
                 }
 //                tcp协议
                 6 => {
@@ -66,7 +66,7 @@ pub fn hand_eth_2(data:&[u8]) -> eth_2_struct{
                     })
                 }
                 _ => {
-                    eth_2_struct::UNKOWN(format!("hand eth_2 ipv4 not develop : {}",protocol))
+                    eth_2_struct::UNKOWN(format!("IP上层协议未开发： {}",protocol))
                 }
             }
         }
@@ -76,7 +76,7 @@ pub fn hand_eth_2(data:&[u8]) -> eth_2_struct{
             eth_2_struct::ARP(arp)
         }
         _ => {
-            eth_2_struct::UNKOWN(format!("hand eth_2 not develop  : {}",protocol))
+            eth_2_struct::UNKOWN(format!("eth 2 上层协议未开发  : {}",protocol))
         }
     }
 }
@@ -100,7 +100,6 @@ pub fn hand_ipv4_head(data:&[u8]) -> ipv4_head{
         ip_version: i32::from_str_radix( &ip_version__ip_head_len[0..=3] ,2).unwrap(),
         ip_pg_head_len: ip_pg_head_len,
         service_type: u8_to_bit(&data[1]),
-//        ip_pg_len: i16::from_le_bytes([data[2],data[3]]) as i32,
         ip_pg_len: i32::from_str_radix(u8s_to_0xs(&data[2..=3]).join("").as_str(),16).unwrap(),
         identifier: u8s_to_0xs(&data[4..=5]).join(""),
         flags: flags_flags_offset[0..=2].to_string(),
@@ -123,20 +122,14 @@ pub fn hand_tcp_head(data:&[u8]) -> tcp_head{
     let tcp_header_len = i32::from_str_radix( &tcp_header_len__keep_flags[0..=3] ,2).unwrap() * 4;
 
     tcp_head{
-//        src_port: i16::from_le_bytes([data[0],data[1]]) as i32,
         src_port: i32::from_str_radix(u8s_to_0xs(&data[0..=1]).join("").as_str(),16).unwrap(),
-//        dst_port: i16::from_le_bytes([data[2],data[3]]) as i32,
         dst_port: i32::from_str_radix(u8s_to_0xs(&data[2..=3]).join("").as_str(),16).unwrap(),
-//        sequence_number: i32::from_le_bytes([data[4],data[5],data[6],data[7]]),
         sequence_number: i64::from_str_radix(u8s_to_0xs(&data[4..=7]).join("").as_str(),16).unwrap(),
-//        ack_number: i32::from_le_bytes([data[8],data[9],data[10],data[11]]),
         ack_number: i64::from_str_radix(u8s_to_0xs(&data[8..=11]).join("").as_str(),16).unwrap(),
         tcp_header_len: tcp_header_len,
         flags: tcp_header_len__keep_flags[10..=15].to_string(),
-//        window_size: i16::from_le_bytes([data[14],data[15]]) as i32,
         window_size: i32::from_str_radix(u8s_to_0xs(&data[14..=15]).join("").as_str(),16).unwrap(),
         checksum: u8s_to_0xs(&data[16..=17]).join(""),
-//        urgent_pointer: i16::from_le_bytes([data[18],data[19]]) as i32,
         urgent_pointer: i32::from_str_radix(u8s_to_0xs(&data[18..=19]).join("").as_str(),16).unwrap(),
         options: data[20..(tcp_header_len as usize)].to_vec(),
     }

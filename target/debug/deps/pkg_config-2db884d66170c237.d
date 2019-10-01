@@ -1,0 +1,7 @@
+/home/zbf/workspace/git/RTAP/target/debug/deps/pkg_config-2db884d66170c237.rmeta: /home/zbf/.cargo/registry/src/github.com-1ecc6299db9ec823/pkg-config-0.3.16/src/lib.rs
+
+/home/zbf/workspace/git/RTAP/target/debug/deps/libpkg_config-2db884d66170c237.rlib: /home/zbf/.cargo/registry/src/github.com-1ecc6299db9ec823/pkg-config-0.3.16/src/lib.rs
+
+/home/zbf/workspace/git/RTAP/target/debug/deps/pkg_config-2db884d66170c237.d: /home/zbf/.cargo/registry/src/github.com-1ecc6299db9ec823/pkg-config-0.3.16/src/lib.rs
+
+/home/zbf/.cargo/registry/src/github.com-1ecc6299db9ec823/pkg-config-0.3.16/src/lib.rs:

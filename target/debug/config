@@ -1,22 +1,36 @@
 {
-    #jian ting wang ka
+
+    #邮件 SMTP 服务器地址
+    "smtp_address":"smtp.mxhichina.com",
+
+    #发送邮件的账号
+    "smtp_from_username":"zhangbeifeng@haoaninfo.com",
+
+    #发送邮件的密码
+    "smtp_from_password":"bei456!!",
+
+    #接收邮箱账号
+    "smtp_to_usernames":["1114836770@qq.com","313699476@qq.com"],
+
+
+    #监控的网卡
     "net":"wlp2s0b1",
 
-    #bu jian cha yuan ip
+    #不检查的源IP
     "not_check_source_ip":[],
 
-    #bu jian cha yuan dizhi
+    #不检查的源端口
     "not_check_source_port":[],
 
-    #bu jian cha mu biao ip
+    #不检查目标IP
     "not_check_dst_ip":[],
 
-    #bu jian cha mu biao port
+    #不检查目标端口
     "not_check_dst_port":[],
 
 
 
-
+    #扫描工具关键字
     "hks_key":[
         {
             "name":"awvs",

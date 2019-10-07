@@ -6,7 +6,7 @@ pub enum eth_2_struct{
     UNKOWN(String)
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct eth_2_ip_tcp{
     pub eth_head:eth_2_head,
     pub ip_head:ipv4_head,
@@ -24,7 +24,7 @@ pub struct eth_2_ip_udp{
     pub data_info:String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct eth_2_head{
     //  目标mac地址  6字节 返回：十六进制数组
     pub dst_mac:String,
@@ -59,7 +59,7 @@ pub struct arp{
 
 
 //ipv4头部
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct ipv4_head{
 
 //    ip协议  占4位  返回：十进制
@@ -156,7 +156,7 @@ pub struct igmpv3_head{
 
 
 //tcp头部
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct tcp_head{
 
 //    源端口号  16位  返回：十进制
@@ -194,7 +194,7 @@ pub struct tcp_head{
 
 
 //udp头部
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct udp_head{
     //    源端口号  16位  返回：十进制
     pub src_port:i32,

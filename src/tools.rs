@@ -13,3 +13,4 @@ pub fn u8s_to_0xs(data:&[u8]) -> Vec<String>{
         .map(|x| format!("{:0>2}",x))
         .collect::<Vec<String>>()
 }
+

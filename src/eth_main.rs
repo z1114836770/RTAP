@@ -24,19 +24,19 @@ pub fn run_eth(conf:config,hk:HashMap<String,String>){
 
 //    let hk_map = hk_map();
 
-//    let mut savefile = cap.savefile("test.pcap").unwrap();
+    let mut savefile = cap.savefile("hk.pcap").unwrap();
     while let Ok(packet) = cap.next() {
 //        println!("got packet! {:?}", packet);
 //        savefile.write(&packet);
 
-        analyze_ethernet(&packet,&conf,&hk,&mut groud);
+        analyze_ethernet(&packet,&mut savefile,&conf,&hk,&mut groud);
 
     }
 }
 
 
 //分析以太网数据包
-fn analyze_ethernet(packet:&Packet,conf:&config,hk_map:&HashMap<String,String>, groud:&mut BTreeMap<String,Vec<eth_2_ip_tcp>>) {
+fn analyze_ethernet(packet:&Packet, savefile:&mut Savefile, conf:&config,hk_map:&HashMap<String,String>, groud:&mut BTreeMap<String,Vec<eth_2_ip_tcp>>) {
 
     let data= packet.data;
     match eth_format::hand_eth_format(data) {
@@ -46,25 +46,99 @@ fn analyze_ethernet(packet:&Packet,conf:&config,hk_map:&HashMap<String,String>, 
             match eth_2_info {
                 eth_2_struct::ETH_IP_TCP(x) => {
 
-//                    config配置文件中配置的源ip或端口 目标ip或端口 不进行检查
-//                    数据包中 源IP不在 配置文件 不检查源IP列表中
-                    if !conf.not_check_source_ip.contains(&x.ip_head.source_address)
-//                        数据包中 目标IP不在 配置文件 不检查目标IP列表中
-                        && !conf.not_check_dst_ip.contains(&x.ip_head.destination_address)
-//                        数据包中 源端口不在 配置文件 不检查源端口列表中
-                        && !conf.not_check_source_port.contains(&format!("{}",&x.tcp_head.src_port))
-//                        数据包中 目标端口不在 配置文件 不检查目标端口列表中
-                        && !conf.not_check_dst_port.contains(&format!("{}",x.tcp_head.dst_port)) {
-//                        println!("{:?}",x);
+//                    当只检查的源IP数量大于0的时候
+//                    判断数据包的源IP是否位于只检查源IP中
+//                    如果数据包中源IP不在只检查源IP中
+//                    结束
+                    if conf.check_source_ip.len() > 0 {
+                        if !conf.check_source_ip.contains(&x.ip_head.source_address){
+                            return;
+                        }
+//                     当不检查源IP数量大于0的时候
+//                     判断数据包中源IP是否位于不检查源IP中
+//                     如果数据包中源IP在不检查源IP中
+//                        结束
+                    }else if conf.not_check_source_ip.len() > 0 {
+                        if conf.not_check_source_ip.contains(&x.ip_head.source_address){
+                            return
+                        }
+                    }
 
-                        if let Some(ip_tcp) = ip_regroup(groud,x) {
-                            let info = format!("{:?}",ip_tcp);
+//                    当只检查的源端口数量大于0的时候
+//                    判断数据包中源端口是否位于只检查源端口中
+//                    如果数据包中源端口不在只检查源端口中
+//                    结束
+                    if conf.check_source_port.len() > 0{
+                        if !conf.check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) {
+                            return
+                        }
+//                        当不检查源端口数量大于0的时候
+//                        判断数据包中源端口是否位于不检查源端口中
+//                        如果数据包中源端口在不检查源端口中
+//                        结束
+                    }else if conf.not_check_source_port.len() > 0 {
+                        if conf.not_check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) {
+                            return
+                        }
+                    }
+
+//                    当只检查的目标IP数量大于0的时候
+//                    判断数据包中目标IP是否位于只检查目标IP中
+//                    如果数据包中目标IP不在只检查目标IP中
+//                    结束
+                    if conf.check_dst_ip.len() > 0 {
+                        if !conf.check_dst_ip.contains(&x.ip_head.destination_address){
+                            return
+                        }
+//                        当不检查的目标IP数量大于0的时候
+//                        判断数据包中目标IP是否位于不检查目标IP中
+//                        如果数据包中目标IP在不检查目标IP中
+//                        结束
+                    }else if conf.not_check_dst_ip.len() > 0 {
+                        if conf.not_check_dst_ip.contains(&x.ip_head.destination_address){
+                            return
+                        }
+                    }
+
+
+//                    当只检查的目标端口数量大于0的时候
+//                    判断数据包中目标端口是否位于只检查目标端口中
+//                    如果数据包中目标端口不在只检查目标端口中
+//                    结束
+                    if conf.check_dst_port.len() > 0 {
+                        if !conf.check_dst_port.contains(&format!("{}",&x.tcp_head.dst_port)) {
+                            return
+                        }
+//                        当不检查的目标端口数量大于0的时候
+//                        判断数据包中目标端口是否鱼尾不检查目标端口中
+//                        如果数据包中目标端口在不检查目标端口中
+//                        结束
+                    }else if conf.not_check_dst_port.len() > 0 {
+                        if conf.not_check_dst_port.contains(&format!("{}", &x.tcp_head.dst_port)){
+                            return
+                        }
+                    }
+
+
+
+                    println!("{:?}",x);
+
+//                    tcp层数据重组
+
+//                    ip层数据重组
+                    if let Some(ip_tcp) = ip_regroup(groud,x) {
+                        let info = format!("{:?}",ip_tcp);
 //                            println!("{}",info);
-                            hadn_hk(&info,hk_map);
-                            println!("{:?}",groud);
+//                        println!("{:?}",info);
+
+
+//                            判断是否为恶意请求，将恶意数量包 保存到本地
+                        if hadn_hk(&info,hk_map) {
+                            savefile.write(&packet);
                         }
 
                     }
+
                 }
                 eth_2_struct::ETH_IP_UDP(udp) => {
 //                    println!("{:?}",udp);

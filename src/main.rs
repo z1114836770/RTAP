@@ -22,6 +22,7 @@ pub mod hk;
 pub mod send_email;
 pub mod error_log;
 pub mod ip_regroup;
+pub mod tcp_regroup;
 
 
 fn main() {

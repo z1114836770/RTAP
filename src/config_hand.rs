@@ -32,7 +32,24 @@ pub struct config{
 
 //    监控的网卡
     pub net:String,
-//    不监控源IP
+
+
+
+    //    只监控源IP
+    pub check_source_ip:Vec<String>,
+    //    只监控源端口
+    pub check_source_port:Vec<String>,
+    //    只监控目标IP
+    pub check_dst_ip:Vec<String>,
+    //    只监控目标端口
+    pub check_dst_port:Vec<String>,
+
+
+//只监控部分于不监控部分 互斥
+//    只监控优先于不监控
+//    设置了只监控参数，不监控刚失效
+
+    //    不监控源IP
     pub not_check_source_ip:Vec<String>,
 //    不监控源端口
     pub not_check_source_port:Vec<String>,
@@ -40,6 +57,10 @@ pub struct config{
     pub not_check_dst_ip:Vec<String>,
 //    不监控目标端口
     pub not_check_dst_port:Vec<String>,
+
+
+
+
 //    扫描工具关键字
     pub hks_key:Vec<hks>
 
@@ -96,6 +117,10 @@ pub  fn config_info() -> (config,HashMap<String,String>){
                 smtp_from_password: "".to_string(),
                 smtp_to_usernames: vec![],
                 net: "".to_string(),
+                check_source_ip: vec![],
+                check_source_port: vec![],
+                check_dst_ip: vec![],
+                check_dst_port: vec![],
                 not_check_source_ip: vec![],
                 not_check_source_port: vec![],
                 not_check_dst_ip: vec![],

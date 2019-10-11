@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 
 //判断数据是否包含扫描工具关键字
-pub fn hadn_hk(info:&String, hk_map:&HashMap<String,String>){
+pub fn hadn_hk(info:&String, hk_map:&HashMap<String,String>) -> bool{
     let mut res = String::new();
     for (k,v ) in hk_map{
         if info.contains(k) {
@@ -16,5 +16,7 @@ pub fn hadn_hk(info:&String, hk_map:&HashMap<String,String>){
         // do
         // do
         // do
+        return true
     }
+    false
 }

@@ -20,7 +20,7 @@ pub fn ip_regroup(ip_map:&mut BTreeMap<String,Vec<eth_2_ip_tcp>>, ip_tcp:eth_2_i
     let flags_1 = flags.chars().nth(1).unwrap();
     let flags_2 = flags.chars().nth(2).unwrap();
 
-    println!("{}",flags);
+//    println!("{}",flags);
 
 //    判断数据包是否分片
 //    如果不分片直接返回

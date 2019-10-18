@@ -45,79 +45,105 @@ fn analyze_ethernet(packet:&Packet, savefile:&mut Savefile, conf:&config,hk_map:
             let eth_2_info = hand_eth_2(data);
             match eth_2_info {
                 eth_2_struct::ETH_IP_TCP(x) => {
+//
+////                    当只检查的源IP数量大于0的时候
+////                    判断数据包的源IP是否位于只检查源IP中
+////                    如果数据包中源IP不在只检查源IP中
+////                    结束
+//                    if conf.check_source_ip.len() > 0 {
+//                        if !conf.check_source_ip.contains(&x.ip_head.source_address){
+//                            return;
+//                        }
+////                     当不检查源IP数量大于0的时候
+////                     判断数据包中源IP是否位于不检查源IP中
+////                     如果数据包中源IP在不检查源IP中
+////                        结束
+//                    }else if conf.not_check_source_ip.len() > 0 {
+//                        if conf.not_check_source_ip.contains(&x.ip_head.source_address){
+//                            return
+//                        }
+//                    }
+//
+////                    当只检查的源端口数量大于0的时候
+////                    判断数据包中源端口是否位于只检查源端口中
+////                    如果数据包中源端口不在只检查源端口中
+////                    结束
+//                    if conf.check_source_port.len() > 0{
+//                        if !conf.check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) {
+//                            return
+//                        }
+////                        当不检查源端口数量大于0的时候
+////                        判断数据包中源端口是否位于不检查源端口中
+////                        如果数据包中源端口在不检查源端口中
+////                        结束
+//                    }else if conf.not_check_source_port.len() > 0 {
+//                        if conf.not_check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) {
+//                            return
+//                        }
+//                    }
+//
+////                    当只检查的目标IP数量大于0的时候
+////                    判断数据包中目标IP是否位于只检查目标IP中
+////                    如果数据包中目标IP不在只检查目标IP中
+////                    结束
+//                    if conf.check_dst_ip.len() > 0 {
+//                        if !conf.check_dst_ip.contains(&x.ip_head.destination_address){
+//                            return
+//                        }
+////                        当不检查的目标IP数量大于0的时候
+////                        判断数据包中目标IP是否位于不检查目标IP中
+////                        如果数据包中目标IP在不检查目标IP中
+////                        结束
+//                    }else if conf.not_check_dst_ip.len() > 0 {
+//                        if conf.not_check_dst_ip.contains(&x.ip_head.destination_address){
+//                            return
+//                        }
+//                    }
+//
+//
+////                    当只检查的目标端口数量大于0的时候
+////                    判断数据包中目标端口是否位于只检查目标端口中
+////                    如果数据包中目标端口不在只检查目标端口中
+////                    结束
+//                    if conf.check_dst_port.len() > 0 {
+//                        if !conf.check_dst_port.contains(&format!("{}",&x.tcp_head.dst_port)) {
+//                            return
+//                        }
+////                        当不检查的目标端口数量大于0的时候
+////                        判断数据包中目标端口是否鱼尾不检查目标端口中
+////                        如果数据包中目标端口在不检查目标端口中
+////                        结束
+//                    }else if conf.not_check_dst_port.len() > 0 {
+//                        if conf.not_check_dst_port.contains(&format!("{}", &x.tcp_head.dst_port)){
+//                            return
+//                        }
+//                    }
 
-//                    当只检查的源IP数量大于0的时候
-//                    判断数据包的源IP是否位于只检查源IP中
-//                    如果数据包中源IP不在只检查源IP中
-//                    结束
-                    if conf.check_source_ip.len() > 0 {
-                        if !conf.check_source_ip.contains(&x.ip_head.source_address){
-                            return;
-                        }
-//                     当不检查源IP数量大于0的时候
-//                     判断数据包中源IP是否位于不检查源IP中
-//                     如果数据包中源IP在不检查源IP中
-//                        结束
-                    }else if conf.not_check_source_ip.len() > 0 {
-                        if conf.not_check_source_ip.contains(&x.ip_head.source_address){
+
+
+//                    只要满足一个只检查的条件就可以
+//                    未满足任何一个只检查条件，
+//                    同时只检查条件中只要有一条长度不为0就结束
+                    if !conf.check_source_ip.contains(&x.ip_head.source_address)
+                        && !conf.check_source_port.contains(&format!("{}",&x.tcp_head.src_port))
+                        && !conf.check_dst_ip.contains(&x.ip_head.destination_address)
+                        && !conf.check_dst_port.contains(&format!("{}",&x.tcp_head.dst_port)){
+
+                        if conf.check_source_ip.len() != 0
+                            || conf.check_source_port.len() != 0
+                            || conf.check_dst_ip.len() != 0
+                            || conf.check_dst_port.len() != 0{
                             return
                         }
+//                    只要满足一个不检查的条件就结束
+                    }else if conf.not_check_source_ip.contains(&x.ip_head.source_address) ||
+                        conf.not_check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) ||
+                        conf.not_check_dst_ip.contains(&x.ip_head.destination_address) ||
+                        conf.not_check_dst_port.contains(&format!("{}",&x.tcp_head.dst_port)){
+                        return
                     }
 
-//                    当只检查的源端口数量大于0的时候
-//                    判断数据包中源端口是否位于只检查源端口中
-//                    如果数据包中源端口不在只检查源端口中
-//                    结束
-                    if conf.check_source_port.len() > 0{
-                        if !conf.check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) {
-                            return
-                        }
-//                        当不检查源端口数量大于0的时候
-//                        判断数据包中源端口是否位于不检查源端口中
-//                        如果数据包中源端口在不检查源端口中
-//                        结束
-                    }else if conf.not_check_source_port.len() > 0 {
-                        if conf.not_check_source_port.contains(&format!("{}",&x.tcp_head.src_port)) {
-                            return
-                        }
-                    }
 
-//                    当只检查的目标IP数量大于0的时候
-//                    判断数据包中目标IP是否位于只检查目标IP中
-//                    如果数据包中目标IP不在只检查目标IP中
-//                    结束
-                    if conf.check_dst_ip.len() > 0 {
-                        if !conf.check_dst_ip.contains(&x.ip_head.destination_address){
-                            return
-                        }
-//                        当不检查的目标IP数量大于0的时候
-//                        判断数据包中目标IP是否位于不检查目标IP中
-//                        如果数据包中目标IP在不检查目标IP中
-//                        结束
-                    }else if conf.not_check_dst_ip.len() > 0 {
-                        if conf.not_check_dst_ip.contains(&x.ip_head.destination_address){
-                            return
-                        }
-                    }
-
-
-//                    当只检查的目标端口数量大于0的时候
-//                    判断数据包中目标端口是否位于只检查目标端口中
-//                    如果数据包中目标端口不在只检查目标端口中
-//                    结束
-                    if conf.check_dst_port.len() > 0 {
-                        if !conf.check_dst_port.contains(&format!("{}",&x.tcp_head.dst_port)) {
-                            return
-                        }
-//                        当不检查的目标端口数量大于0的时候
-//                        判断数据包中目标端口是否鱼尾不检查目标端口中
-//                        如果数据包中目标端口在不检查目标端口中
-//                        结束
-                    }else if conf.not_check_dst_port.len() > 0 {
-                        if conf.not_check_dst_port.contains(&format!("{}", &x.tcp_head.dst_port)){
-                            return
-                        }
-                    }
 
 
 

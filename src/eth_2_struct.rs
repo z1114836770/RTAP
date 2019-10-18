@@ -192,6 +192,36 @@ pub struct tcp_head{
     pub options:Vec<u8>,
 }
 
+//tcp头加数据
+#[derive(Debug, PartialEq)]
+pub struct ipv4_tcp_data{
+    pub ip_head:ipv4_head,
+    pub tcp_head:tcp_head,
+    pub tcp_data:Vec<u8>
+}
+
+//重组tcp时需要的结构体
+#[derive(Debug, PartialEq)]
+pub struct tcp_regroup_struct{
+//    tcp包中数据部分总长度
+    pub all_tcp_data_len:i32,
+//    tcp重组结构创建时间
+    pub create_tcp_regroup_time:i64,
+//    新入tcp包时间
+    pub new_in_tcp_time:i64,
+//    结束位标示（最后一个数据包是否已经到，但是中间还没有到。1表示已到，往后再到的数据包 需要进行结束合并计算）
+    pub end_lable:i32,
+//    第一个请求的tcp包
+    pub syn_seq:tcp_head,
+//    最后一个到达的tcp包
+    pub fin_seq:tcp_head,
+
+//   发送的 需要被重组的tcp包集合
+    pub send_tcps:Vec<ipv4_tcp_data>,
+//   接受的 需要被重组的tcp包集合
+    pub res_tcps:Vec<ipv4_tcp_data>
+}
+
 
 //udp头部
 #[derive(Debug, PartialEq)]

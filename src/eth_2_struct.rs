@@ -238,3 +238,61 @@ pub struct udp_head{
     //    校验和  16位  返回：十六进制
     pub checksum:String,
 }
+
+
+//tcp重组_会话
+#[derive(Debug, PartialEq)]
+pub struct tcp_session{
+//    源ip
+    pub src_ip:String,
+//    源端口
+    pub src_port:i32,
+//    目标ip
+    pub des_ip:String,
+//    目标端口
+    pub des_port:i32,
+//    创建时间
+    pub create_time:i64,
+//    更新时间
+    pub update_time:i64,
+//    当前数据包长度
+    pub data_len:i32,
+//    发送的tcp包链表
+    pub send_nods:Option<Box<tcp_node>>,
+//    接收的tcp包链表
+    pub get_nods:Option<Box<tcp_node>>
+}
+
+//tcp重组_节点
+#[derive(Debug, PartialEq)]
+pub struct tcp_node{
+//    是否未发送包
+    pub syn:i32,
+//    是否未结束包
+    pub fin:i32,
+//    数据包序列号
+    pub seq:i64,
+//    数据包的长度
+    pub len:i32,
+//    上一个tcp节点
+    pub prev_tcp_node:Option<Box<tcp_node>>,
+//    下一个tcp节点
+    pub netx_tcp_node:Option<Box<tcp_node>>,
+//   数据是否存盘
+    pub save:bool,
+//    数据包内容
+    pub data:Vec<u8>,
+//      存盘的索引
+    pub data_lib:String
+}
+
+
+
+
+
+
+
+
+
+
+

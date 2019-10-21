@@ -1,170 +1,91 @@
 extern crate chrono;
 
 use std::collections::BTreeMap;
-use crate::eth_2_struct::{eth_2_ip_tcp, tcp_regroup_struct, ipv4_tcp_data, tcp_head};
+use crate::eth_2_struct::{eth_2_ip_tcp, tcp_regroup_struct, ipv4_tcp_data, tcp_head, tcp_session, tcp_node};
 use std::borrow::BorrowMut;
 
 
 use chrono::prelude::*;
 use std::cmp::Ordering;
+use pcap::Packet;
 
 
-pub fn tcp_regroud(ip_map:&mut BTreeMap<String, tcp_regroup_struct>, ip_tcp:eth_2_ip_tcp, data:Vec<u8>) -> Option<eth_2_ip_tcp>{
+pub fn tcp_regroud(ip_map:&mut BTreeMap<String, tcp_session>, ip_tcp:eth_2_ip_tcp, packet:Packet) -> Option<eth_2_ip_tcp>{
+    
+//    客户端发送数据包key
+    let client_send_key = format!("{}|{}|{}|{}",
+                           ip_tcp.ip_head.source_address,
+                            ip_tcp.tcp_head.src_port,
+                            ip_tcp.ip_head.destination_address,
+                            ip_tcp.tcp_head.dst_port
+    );
+    
+//    服务器发送的数据包key
+    let server_send_key  = format!("{}|{}|{}|{}",
+                                   ip_tcp.ip_head.destination_address,
+                                   ip_tcp.tcp_head.dst_port,
+                                   ip_tcp.ip_head.source_address,
+                                   ip_tcp.tcp_head.src_port
+    );
+    
+    
+//    客户端发送的数据包key 和 服务器端发送的数据包key 应该是相同的。
+//    同一个数据包这两个值是不同的
+    
+    
+//    如果一个数据包的这两种key都不存在则说明需要创建tcp会话
+//    如果client_send_key存在则说明当前数据包为客户端发送的数据包
+//    如果server_send_key存在则说明当前数据包为服务器发送的数据包
+    if !ip_map.contains_key(&client_send_key) && !ip_map.contains_key(&server_send_key) {
+        let tcp_session = tcp_session{
+            src_ip: ip_tcp.ip_head.source_address,
+            src_port: ip_tcp.tcp_head.src_port,
+            des_ip: ip_tcp.ip_head.destination_address,
+            des_port: ip_tcp.tcp_head.dst_port,
+            create_time: 0,
+            update_time: 0,
+            data_len: 0,
+            send_nods: Option::from(Box::new(tcp_node{
+                syn: i32::from_str_radix( &ip_tcp.tcp_head.flags[4..=4] ,2).unwrap(),
+                fin: i32::from_str_radix( &ip_tcp.tcp_head.flags[5..=5] ,2).unwrap(),
+                seq: ip_tcp.tcp_head.sequence_number,
+                len: packet.data.len() as i32,
+                prev_tcp_node: None,
+                netx_tcp_node: None,
+                save: false,
+                data:packet.data.to_vec(),
+                data_lib: "".to_string()
+            })),
+            get_nods: None
+        };
+        ip_map.borrow_mut().insert(client_send_key,tcp_session);
+    }else if ip_map.contains_key(&client_send_key) {
+        let tcp_node =tcp_node{
+            syn: i32::from_str_radix( &ip_tcp.tcp_head.flags[4..=4] ,2).unwrap(),
+            fin: i32::from_str_radix( &ip_tcp.tcp_head.flags[5..=5] ,2).unwrap(),
+            seq: ip_tcp.tcp_head.sequence_number,
+            len: packet.data.len() as i32,
+            prev_tcp_node: None,
+            netx_tcp_node: None,
+            save: false,
+            data:packet.data.to_vec(),
+            data_lib: "".to_string()
+        };
 
-//  发送包的key
-    let source_ip_port_dest_ip_port = format!("{}/{}/{}/{}",
-                                              &ip_tcp.ip_head.source_address,
-                                              &ip_tcp.tcp_head.src_port,
-                                              &ip_tcp.ip_head.destination_address,
-                                              &ip_tcp.tcp_head.dst_port);
-//    接收包的key
-    let dest_ip_port_source_ip_port = format!("{}/{}/{}/{}",
-                                              &ip_tcp.ip_head.source_address,
-                                              &ip_tcp.tcp_head.src_port,
-                                              &ip_tcp.ip_head.destination_address,
-                                              &ip_tcp.tcp_head.dst_port);
+        let tcp_session = ip_map.get_mut(&client_send_key).unwrap();
+        let  send_nod = tcp_session.send_nods.as_ref().unwrap();
+        let ar = send_nod.netx_tcp_node.as_ref();
+        if(ar.is_none()){
+            let mut netx_tcp_node = ar.unwrap();
+            netx_tcp_node = &Box::new(tcp_node);
+        }
 
 
-//    判断两种形式的key在总集合ip_map中是否已经存在
-//    如果不存在则按第一种方式的key创建ip_map对应的tcp_regroup_struct信息
-
-//    如果存在则进行添加，
-//    判断是否为最后一个包
-//      如果是最后一个包到 则进行数据重组运算，
-//      如果最后一个包到，但数据整体未完整，则以后到的每个数据包 都将进行数据重组运算
-
-
-//    -------------------------
-
-//    判断tcp重组类型是否已经创建
-//    如果未创建则新建
-    if !ip_map.contains_key(&source_ip_port_dest_ip_port) &&
-        !ip_map.contains_key(&dest_ip_port_source_ip_port){
-        let sequence_number = ip_tcp.tcp_head.sequence_number.clone();
-        let data_len = data.len();
+    }else if ip_map.contains_key(&server_send_key) {
         
-
-        let local_now_timestamp = Local::now().timestamp_millis();
-
-        let tcp_regroup_struct = tcp_regroup_struct{
-            all_tcp_data_len: data_len as i32,
-            create_tcp_regroup_time: local_now_timestamp,
-            new_in_tcp_time: local_now_timestamp,
-            end_lable: 0,
-            syn_seq: ip_tcp.tcp_head,
-            fin_seq: tcp_head{
-                src_port: 0,
-                dst_port: 0,
-                sequence_number,
-                ack_number: 0,
-                tcp_header_len: 0,
-                flags: "".to_string(),
-                window_size: 0,
-                checksum: "".to_string(),
-                urgent_pointer: 0,
-                options: vec![]
-            },
-            send_tcps: vec![],
-            res_tcps: vec![]
-        };
-        ip_map.borrow_mut() .insert(source_ip_port_dest_ip_port,tcp_regroup_struct);
-
-//        判断tcp数据包是否为一个方向上面的数据
-//        并判断是否意见存在，不存在则添加
-    }else if !ip_map.contains_key(&source_ip_port_dest_ip_port) {
-
-        let ipv4_tcp_data = ipv4_tcp_data{
-            ip_head: ip_tcp.ip_head,
-            tcp_head: ip_tcp.tcp_head,
-            tcp_data: data
-        };
-
-
-
-        let s1_value = ip_map.get_mut(&source_ip_port_dest_ip_port).expect("读取ip_map数据异常");
-
-        s1_value.all_tcp_data_len += data.len();
-
-        if !s1_value.send_tcps.contains(&ipv4_tcp_data) {
-            s1_value.new_in_tcp_time = Local::now().timestamp_millis();
-            s1_value.send_tcps.push(ipv4_tcp_data);
-        }
-
-        let fin = ip_tcp.tcp_head.flags[5];
-        if fin == 1 {
-//          进行重组运算
-            s1_value.fin_seq = ip_tcp.tcp_head;
-            s1_value.end_lable = 1
-
-
-        }
-    }else if !ip_map.contains_key(&dest_ip_port_source_ip_port) {
-
-        let ipv4_tcp_data = ipv4_tcp_data{
-            ip_head: ip_tcp.ip_head,
-            tcp_head: ip_tcp.tcp_head,
-            tcp_data: data
-        };
-
-        let s1_value = ip_map.get_mut(&dest_ip_port_source_ip_port).expect("读取ip_map数据异常");
-
-        s1_value.all_tcp_data_len += data.len();
-
-        if !s1_value.res_tcps.contains(&ipv4_tcp_data) {
-            s1_value.new_in_tcp_time = Local::now().timestamp_millis();
-            s1_value.res_tcps.push(ipv4_tcp_data);
-        }
-
-        let fin = ip_tcp.tcp_head.flags[5];
-        if fin == 1 {
-//          进行重组运算
-            s1_value.fin_seq = ip_tcp.tcp_head;
-            s1_value.end_lable = 1
-
-        }
+    }else{
+        println!("不应该处理该情况，请联系管理员");
     }
-
-    None
-}
-
-
-//重组运算
-fn tcp_regroud_ing(tcp_regroup_struct: &tcp_regroup_struct) -> Option<ipv4_tcp_data>{
-    let all_tcp_data_len = &tcp_regroup_struct.all_tcp_data_len;
-    let syn_seq = &tcp_regroup_struct.syn_seq;
-    let fin_seq = &tcp_regroup_struct.fin_seq;
-    let new_in_tcp_time = &tcp_regroup_struct.new_in_tcp_time;
-    let create_tcp_regroup_time = &tcp_regroup_struct.create_tcp_regroup_time;
-    let mut send_tcps = &tcp_regroup_struct.send_tcps;
-    let mut res_tcps = &tcp_regroup_struct.res_tcps;
-
-
-    let len = (fin_seq.sequence_number - syn_seq.sequence_number - ( all_tcp_data_len as i64)) as i32;
-    let expend = new_in_tcp_time - create_tcp_regroup_time;
-
-
-//  已到数据长度 和 应到数据长度不符合  直接结束
-    if &len != all_tcp_data_len {
-        return None;
-    }
-
-
-
-
-    send_tcps.sort_by_key(|x| x.tcp_head.sequence_number);
-    res_tcps.sort_by_key(|x| x.tcp_head.sequence_number);
-
-    let mut send_data = vec![];
-    let mut res_data = vec![];
-
-    for send_tcp in send_tcps {
-        send_data.push(send_tcp.tcp_data);
-    }
-
-    for res_tcp in res_tcps {
-        res_data.push(res_tcp.tcp_data)
-    }
-
-
+    
     None
 }

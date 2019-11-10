@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug)]
 pub enum eth_2_struct{
     ETH_IP_TCP(eth_2_ip_tcp),
@@ -255,31 +257,58 @@ pub struct tcp_session{
     pub create_time:i64,
 //    更新时间
     pub update_time:i64,
-//    当前数据包长度
-    pub data_len:i32,
-//    发送的tcp包链表
-    pub send_nods:Option<Box<tcp_node>>,
+
+//    当前客户端发送数据包长度
+    pub client_data_len:i64,
+//    客户端第一个包的序列号
+    pub client_syn_seq:i64,
+//    客户端最后一包的seq
+    pub client_fin_seq:i64,
+//    客户端最后一个包是否已到
+    pub client_fin:bool,
+    //   客户端数据是否存盘
+    pub client_save:bool,
+//    客户端数据包是否已全到
+    pub client_data_down:bool,
+//    客户端发送的tcp包链表
+    pub client_nods:HashMap<i64,tcp_data>,
+
+    //    当前服务端发送数据包长度
+    pub server_data_len:i64,
+    //    服务端第一个包的序列号
+    pub server_syn_seq:i64,
+    //    服务端最后一包的seq
+    pub server_fin_seq:i64,
+    //    服务端最后一个包是否已到
+    pub server_fin:bool,
+    //   服务端数据是否存盘
+    pub server_save:bool,
+    //    服务端数据包是否已全到
+    pub server_data_down:bool,
 //    接收的tcp包链表
-    pub get_nods:Option<Box<tcp_node>>
+    pub server_nods:HashMap<i64,tcp_data>,
 }
+
 
 //tcp重组_节点
 #[derive(Debug, PartialEq)]
-pub struct tcp_node{
+pub struct tcp_data{
 //    是否未发送包
-    pub syn:i32,
-//    是否未结束包
-    pub fin:i32,
-//    数据包序列号
-    pub seq:i64,
-//    数据包的长度
-    pub len:i32,
+//    pub syn:i32,
+////    是否未结束包
+//    pub fin:i32,
+////    数据包序列号
+//    pub seq:i64,
+////    数据包的长度
+//    pub len:i32,
 //    上一个tcp节点
-    pub prev_tcp_node:Option<Box<tcp_node>>,
+//    pub prev_tcp_node:Option<Box<tcp_node>>,
 //    下一个tcp节点
-    pub netx_tcp_node:Option<Box<tcp_node>>,
+//    pub netx_tcp_node:Option<Box<tcp_node>>,
 //   数据是否存盘
-    pub save:bool,
+//    pub save:bool,
+//    当前数据包长度
+    pub data_len:i32,
 //    数据包内容
     pub data:Vec<u8>,
 //      存盘的索引

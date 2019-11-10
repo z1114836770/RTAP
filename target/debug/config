@@ -29,13 +29,13 @@
     "not_check_dst_port":[],
 
     #只检查的源IP
-    "check_source_ip":["180.101.49.12"],
+    "check_source_ip":[],
 
     #只检查的源端口
     "check_source_port":[],
 
     #只检查的目标IP
-    "check_dst_ip":["180.101.49.12"],
+    "check_dst_ip":[],
 
     #只检查的目标端口
     "check_dst_port":[],

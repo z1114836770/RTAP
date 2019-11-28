@@ -12,6 +12,7 @@ use std::fmt::Formatter;
 use crate::ip_regroup::ip_regroup;
 use crate::tcp_regroup::tcp_regroud;
 use std::ops::Deref;
+use crate::data_tmp::write_data_tmp;
 
 
 //开始进入eth抓包
@@ -37,6 +38,13 @@ pub fn run_eth(conf:config,hk:HashMap<String,String>){
 
         analyze_ethernet(&packet,&mut savefile,&conf,&hk,&mut tcp_map);
         println!("{}",tcp_map.len());
+//        if tcp_map.len() == 20 {
+//            for (k,v) in &tcp_map {
+//                write_data_tmp(&k.replace(".","_"),format!("{:?}",v).as_bytes());
+//
+//            }
+//
+//        }
     }
 }
 
@@ -51,7 +59,6 @@ fn analyze_ethernet(packet:&Packet, savefile:&mut Savefile, conf:&config,hk_map:
             let eth_2_info = hand_eth_2(data);
             match eth_2_info {
                 eth_2_struct::ETH_IP_TCP(x) => {
-
 //                    只要满足一个只检查的条件就可以
 //                    未满足任何一个只检查条件，
 //                    同时只检查条件中只要有一条长度不为0就结束
@@ -77,8 +84,8 @@ fn analyze_ethernet(packet:&Packet, savefile:&mut Savefile, conf:&config,hk_map:
 
 
 
-
 //                    println!("{:?}",x);
+
 
 
 

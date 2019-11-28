@@ -17,6 +17,8 @@ chrono = "0.4"
 
 libc = "0.2.65"
 
+uuid = { version = "0.8", features = ["serde", "v4"] }
+
 mongodb = "0.3.11"
 
 lettre = "0.9"

@@ -319,7 +319,18 @@ pub struct tcp_data{
 
 
 
-
+//重组后的结构
+#[derive(Debug, PartialEq, Clone)]
+pub struct ip_tcp_data{
+    pub s_ip:String,
+    pub s_port:i32,
+    pub d_ip:String,
+    pub d_port:i32,
+    pub client_data_bit:Vec<u8>,
+    pub client_data_lib:String,
+    pub server_data_bit:Vec<u8>,
+    pub server_data_lib:String,
+}
 
 
 

@@ -10,12 +10,20 @@ use mongodb::db::ThreadedDatabase;
 
 use crate::eth_main::run_eth;
 
+use std::thread;
+use std::time::Duration;
 
 
 
 use crate::config_hand::{config_info, config};
 use std::collections::{HashMap, BTreeMap};
 use std::borrow::{Borrow, BorrowMut};
+use std::io::{Write, Read};
+use uuid::Uuid;
+use std::ops::Deref;
+use crate::tools::time_stamp;
+use crate::eth_2_struct::tcp_session;
+use std::sync::{Arc, Mutex};
 
 pub mod tools;
 pub mod eth_2_struct;
@@ -28,14 +36,31 @@ pub mod send_email;
 pub mod error_log;
 pub mod ip_regroup;
 pub mod tcp_regroup;
+pub mod data_tmp;
 
 
 fn main() {
 
+//新开一个线程用于记录是否超时的情况
+//每次接收到数据包就把更新时间发送到新的线程内
+//在新线程内循环一直检查是否有超时情况
+// 发现有超时情况就将超时的标识符发送有另一个线程，
+// 另一个线程则将这个数据从会话集合中删除
+ let mut tcp_map:Arc<Mutex<BTreeMap<String, tcp_session>>> = BTreeMap::new();
 
-//    let mut a = [71, 69, 84, 32, 47, 32, 72, 84, 84, 80, 47, 49, 46, 49, 13, 10, 72, 111, 115, 116, 58, 32, 119, 119, 119, 46, 98, 97, 105, 100, 117, 46, 99, 111, 109, 13, 10, 85, 115, 101, 114, 45, 65, 103, 101, 110, 116, 58, 32, 99, 117, 114, 108, 47, 55, 46, 53, 50, 46, 49, 13, 10, 65, 99, 99, 101, 112, 116, 58, 32, 42, 47, 42, 13, 10, 13, 10];
-//    a.iter_mut().map(|x| *x as u8);
-//    println!("{:?}", String::from_utf8(a.to_vec()));
+
+// let counter:Arc<Mutex<tcp_session>> = Arc::new(Mutex::new(tcp_session));
+
+//新开线程 用于处理 超时的tcp重组数据
+
+ let tcp_map_2 = tcp_map.clone();
+
+ let handle = thread::spawn(move || {
+  tcp_map_2.clone();
+ });
+ println!("111111111");
+ handle.join();
+
 
 ////    获取配置文件中的信息
 // let (conf,hk) = config_info();
@@ -57,7 +82,7 @@ fn main() {
 
 //    error_log::err_log("test error info123");
 
- mongo_test();
+// mongo_test();
 }
 
 

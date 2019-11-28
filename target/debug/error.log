@@ -2,3 +2,5 @@
 [2019-10-06][09:42:25][RTAP::error_log][ERROR] test error info
 [2019-10-06][10:53:00][RTAP::error_log][ERROR] test error info123
 [2019-10-06][20:05:42][RTAP::error_log][ERROR] test error info123
+[2019-11-18][19:25:26][RTAP::error_log][ERROR] 将config转成json失败
+[2019-11-18][19:25:29][RTAP::error_log][ERROR] 将config转成json失败

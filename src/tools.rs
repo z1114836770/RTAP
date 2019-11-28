@@ -1,3 +1,5 @@
+use chrono::prelude::*;
+extern crate chrono;
 
 pub fn u8_to_bit(data:&u8) -> String{
     format!("{number:0>width$}", number=format!("{:b}",data), width=8)
@@ -14,3 +16,8 @@ pub fn u8s_to_0xs(data:&[u8]) -> Vec<String>{
         .collect::<Vec<String>>()
 }
 
+//获取当前时间戳
+pub fn time_stamp() -> String{
+    let dt = Local::now();
+    format!("{}",dt.timestamp_millis())
+}
